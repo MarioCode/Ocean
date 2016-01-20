@@ -26,6 +26,7 @@ private slots:
     void DrawScene(QPainter &p);
     void Generation(QPainter &p);
     void InitField(QPainter &p);
+
 public slots:
     void ChangeFieldSize(const int &size);
     void startGame();
@@ -37,9 +38,10 @@ private:
     int SizeField;
     int **Field;
     QTimer *timer;
-    Predators *predators;
-    Victims *victims;
-    bool **area;
+    QVector<Predators> predators;
+    QVector<Victims> victims;
+
+    unsigned char **area; //0 - не занято, 1 - занято хищником, 2 - занято жертвой
 };
 
 #endif // DRAWING_SCENE_H

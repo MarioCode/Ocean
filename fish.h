@@ -11,10 +11,9 @@ protected:
 
 public:
     Fish(): pos_x(0), pos_y(0), isLive(false) {}
-    Fish(int _x, int _y): pos_x(_x), pos_y(_y) {}
+    Fish(int _x, int _y, bool _isLive): pos_x(_x), pos_y(_y), isLive(_isLive) {}
 
     bool CheckIsLive() const;
-    //int WhoIsNear() const;
     bool GetCurPoint() const;
     int GetX() const;
     int GetY() const;

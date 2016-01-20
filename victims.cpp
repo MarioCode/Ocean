@@ -1,6 +1,6 @@
 #include "victims.h"
 
-int Victims::GetCountTime() const
+int& Victims::GetCountTime()
 {
     return CountTime;
 }

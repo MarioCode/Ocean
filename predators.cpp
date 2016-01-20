@@ -10,7 +10,7 @@ int Predators::GetCountAte() const
     return CountAte;
 }
 
-int Predators::GetCountTime() const
+int& Predators::GetCountTime()
 {
     return CountTime;
 }

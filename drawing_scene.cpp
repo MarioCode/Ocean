@@ -1,5 +1,11 @@
 #include "drawing_scene.h"
 
+struct Point
+{
+    int x,y;
+    Point(int _x=0, int _y=0):x(_x), y(_y){}
+};
+
 Drawing_Scene::Drawing_Scene(QWidget *parent) : QWidget(parent)
 {
     QTime time = QTime::currentTime();
@@ -7,16 +13,14 @@ Drawing_Scene::Drawing_Scene(QWidget *parent) : QWidget(parent)
     timer = new QTimer;
 
     SizeField = 100;
-    predators=new Predators[100];
-    victims = new Victims[15000];
 
-    area = new bool * [SizeField];
+    area = new unsigned char * [SizeField];
     for (int i = 0; i < SizeField; i++)
-       area[i] = new bool [SizeField];
+        area[i] = new unsigned char [SizeField];
 
     for(int i=0; i<SizeField; i++)
         for(int j=0; j<SizeField; j++)
-            area[i][j] = false;
+            area[i][j] = 0;
 
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 }
@@ -45,7 +49,7 @@ void Drawing_Scene::paintEvent(QPaintEvent *)
     DrawGrid(p);
 
     if(init_start)
-    InitField(p);
+        InitField(p);
     init_start=false;
 
     Generation(p);
@@ -59,169 +63,178 @@ void Drawing_Scene::ChangeFieldSize(const int &size)
 
 void Drawing_Scene::InitField(QPainter &p)
 {
-    qDebug() << "INIT";
+    // Добавление хищников в вектор
+    // Начальное значение брать из ползунка в формы
 
-    for(int i=0; i<100; i++)
+    for(int i=0; i<2; i++)
     {
         int posX = qrand()%SizeField;
         int posY = qrand()%SizeField;
-        predators[i].SetX(posX);
-        predators[i].SetY(posY);
+        if(area[posX][posY])
+        {
+            i--;
+            continue;
+        }
+        predators.push_back(Predators(posX,posY));
         area[posX][posY] = true;
     }
 
+     // Добавление жертв в вектор
 
-    for(int Pr=0; Pr<100; Pr++)
+    for(int i=0; i<2; i++)
     {
-         double cellWidth = (double)width()/SizeField;
-         double cellHeight = (double)height()/SizeField;
-
-         p.setBrush(Qt::blue);
-         p.drawEllipse((predators[Pr].GetX())*cellWidth ,(predators[Pr].GetY())*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
+        int posX = qrand()%SizeField;
+        int posY = qrand()%SizeField;
+        if(area[posX][posY])
+        {
+            i--;
+            continue;
+        }
+        victims.push_back(Victims(posX, posY));
+        area[posX][posY] = true;
     }
+
+    // Начальная отрисовка
+    // Оставить для кнопки генерации поля
+
+    //    for(int Pr=0; Pr<100; Pr++)
+    //    {
+    //         double cellWidth = (double)width()/SizeField;
+    //         double cellHeight = (double)height()/SizeField;
+
+    //         p.setBrush(Qt::blue);
+    //         p.drawEllipse((predators[Pr].GetX())*cellWidth ,(predators[Pr].GetY())*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
+    //    }
 }
 
 void Drawing_Scene::Generation(QPainter &p)
 {
-    for(int i=0; i<100; i++)
-    {
-//        int CurPointX=predators[i].GetX();
-//        int CurPointY=predators[i].GetY();
+    for(int i=0; i<predators.size(); i++)
+        {
+            if(predators[i].GetCountTime()==5)
+            {
+                predators.erase(predators.begin()+ i);
+                i--;
+                continue;
+            }
 
-//        //Левый верхний угол
-//       if (CurPointX==0 && CurPointY == 0) {
-//        if(!area[CurPointX+1][CurPointY])
-//        {
-//            predators[i].SetCoord(CurPointX+1, CurPointY);
-//            area[CurPointX+1][CurPointY] = true;
-//            area[CurPointX][CurPointY] = false;
-//        }
-//            else if (!area[CurPointX+1][CurPointY-1])
-//        {
-//                 predators[i].SetCoord(CurPointX+1, CurPointY-1);
-//                 area[CurPointX+1][CurPointY-1] = true;
-//                 area[CurPointX][CurPointY] = false;
-//        }
-//                    else if (!area[CurPointX][CurPointY-1])
-//        {
-//                       predators[i].SetCoord(CurPointX, CurPointY-1);
-//                       area[CurPointX][CurPointY-1] = true;
-//                       area[CurPointX][CurPointY] = false;
-//        }
+            //заполнить вектор свободных клетов вокруг
+            //из количества свободных клеток выбрать рандомное число
+            //перейти в клетку под рандомным числом
+            //пометить предыдущую клетку как свободную
+            //в перейдённую клетку пометить как занятую)))
 
-//       // Левый нижний угол
-//       if (CurPointX==0 && CurPointY == SizeField)
-//        if(!area[CurPointX+1][CurPointY])
-//        {
-//            predators[i].SetCoord(CurPointX+1, CurPointY);
-//            area[CurPointX+1][CurPointY] = true;
-//            area[CurPointX][CurPointY] = false;
-//        }
-//            else if (!area[CurPointX+1][CurPointY+1])
-//        {
-//                 predators[i].SetCoord(CurPointX+1, CurPointY+1);
-//                 area[CurPointX+1][CurPointY+1] = true;
-//                 area[CurPointX][CurPointY] = false;
-//        }
-//                    else if (!area[CurPointX][CurPointY+1])
-//        {
-//                       predators[i].SetCoord(CurPointX, CurPointY+1);
-//                       area[CurPointX][CurPointY+1] = true;
-//                       area[CurPointX][CurPointY] = false;
-//        }
+            QVector<Point> cord;
+            for(int k=-1; k<2; k++)
+                for(int l=-1; l<2; l++)
+                {
+                    if(k!=0 && l!=0)
+                        if(predators[i].GetX()+k < SizeField  && predators[i].GetY()+l < SizeField
+                                && predators[i].GetX()+k>=0 && predators[i].GetY()+l>=0)
+                        {
+                            if(area[predators[i].GetX()+k][predators[i].GetY()+l]==0)
+                            {
+                                cord.push_back(Point(predators[i].GetX()+k, predators[i].GetY()+l));
+                            }
+                        }
+                }
 
-//       // Правый верхний угол
-//       if (CurPointX==SizeField && CurPointY == 0)
-//        if(!area[CurPointX-1][CurPointY])
-//        {
-//            predators[i].SetCoord(CurPointX-1, CurPointY);
-//            area[CurPointX-1][CurPointY] = true;
-//            area[CurPointX][CurPointY] = false;
-//        }
-//            else if (!area[CurPointX-1][CurPointY-1])
-//        {
-//                 predators[i].SetCoord(CurPointX-1, CurPointY-1);
-//                 area[CurPointX-1][CurPointY-1] = true;
-//                 area[CurPointX][CurPointY] = false;
-//        }
-//                    else if (!area[CurPointX][CurPointY-1])
-//        {
-//                       predators[i].SetCoord(CurPointX, CurPointY-1);
-//                       area[CurPointX][CurPointY-1] = true;
-//                       area[CurPointX][CurPointY] = false;
-//        }
+            if(cord.size()==0) continue;
 
-//       // Правый нижний угол
-//       if (CurPointX==SizeField && CurPointY == SizeField)
-//        if(!area[CurPointX-1][CurPointY])
-//        {
-//            predators[i].SetCoord(CurPointX-1, CurPointY);
-//            area[CurPointX-1][CurPointY] = true;
-//            area[CurPointX][CurPointY] = false;
-//        }
-//            else if (!area[CurPointX-1][CurPointY+1])
-//        {
-//                 predators[i].SetCoord(CurPointX-1, CurPointY+1);
-//                 area[CurPointX-1][CurPointY+1] = true;
-//                 area[CurPointX][CurPointY] = false;
-//        }
-//                    else if (!area[CurPointX][CurPointY+1])
-//        {
-//                       predators[i].SetCoord(CurPointX, CurPointY+1);
-//                       area[CurPointX][CurPointY+1] = true;
-//                       area[CurPointX][CurPointY] = false;
-//        }
+            int rand = qrand()%cord.size();
 
 
-//       if ((CurPointX > 0 && CurPointX < SizeField-1) && CurPointY == 0)
-//       {
-
-//       }
-
-                   predators[i].SetX(predators[i].GetX()-1);
-                    predators[i].SetY(predators[i].GetY()-1);
-
-   }
+            area[predators[i].GetX()][predators[i].GetY()]=0;
+            area[cord[rand].x][cord[rand].y]=1;
+            predators[i].SetX(cord[rand].x);
+            predators[i].SetY(cord[rand].y);
+            predators[i].GetCountTime()++;
+        }
 
 
-    for(int Pr=0; Pr<100; Pr++)
-    {
-         double cellWidth = (double)width()/SizeField;
-         double cellHeight = (double)height()/SizeField;
+        for(int Pr=0; Pr<predators.size(); Pr++)
+        {
+            double cellWidth = (double)width()/SizeField;
+            double cellHeight = (double)height()/SizeField;
 
-         p.setBrush(Qt::blue);
-         p.drawEllipse((predators[Pr].GetX())*cellWidth ,(predators[Pr].GetY())*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
-    }
-
-
-
-    //ЖЕРТВЫ
-//    for(int i=0; i<15000; i++)
-//    {
-//        int posX = qrand()%SizeField;
-//        int posY = qrand()%SizeField;
-//        if(area[posX][posY]==true)
-//        {
-//            i--;
-//            continue;
-//        }
-//        victims[i].SetX(posX);
-//        victims[i].SetY(posY);
-//    }
+            p.setBrush(Qt::red);
+            p.drawEllipse((predators[Pr].GetX())*cellWidth ,(predators[Pr].GetY())*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
+        }
 
 
-//    for(int Pr=0; Pr<15000; Pr++)
-//    {
-//         double cellWidth = (double)width()/SizeField;
-//         double cellHeight = (double)height()/SizeField;
+        //ЖЕРТВЫ
 
-//         p.setBrush(Qt::red);
-//         p.drawEllipse((victims[Pr].GetX())*cellWidth ,(victims[Pr].GetY())*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
-//    }
+        for(int i=0; i<victims.size(); i++)
+        {
 
-//    for(int i=0; i<SizeField; i++)
-//        for(int j=0; j<SizeField; j++)
-//            area[i][j] = false;
+
+            if(victims[i].GetCountTime()==5)
+            {
+                //размножся
+                QVector<Point> cord;
+
+                for(int k=-1; k<2; k++)
+                    for(int l=-1; l<2; l++)
+                    {
+                        if(k!=0 && l!=0)
+                            if(victims[i].GetX()+k < SizeField  && victims[i].GetY()+l < SizeField
+                                    && victims[i].GetX()+k>=0 && victims[i].GetY()+l>=0)
+                            {
+                                if(!area[victims[i].GetX()+k][victims[i].GetY()+l])
+                                {
+                                    cord.push_back(Point(victims[i].GetX()+k, victims[i].GetY()+l));
+                                }
+                            }
+                    }
+
+                if(cord.size()!=0)
+                {
+                    int rand = qrand()%cord.size();
+                    //victims[i].GetCountTime()=0;
+                    victims.push_back(Victims(cord[rand].x, cord[rand].y));
+                }
+            }
+            //заполнить вектор свободных клетов вокруг
+            //из количества свободных клеток выбрать рандомное число
+            //перейти в клетку под рандомным числом
+            //пометить предыдущую клетку как свободную
+            //в перейдённую клетку пометить как занятую)))
+
+
+            QVector<Point> cord;
+
+            for(int k=-1; k<2; k++)
+                for(int l=-1; l<2; l++)
+                {
+                    if(k!=0 && l!=0)
+                        if(victims[i].GetX()+k < SizeField  && victims[i].GetY()+l < SizeField
+                                && victims[i].GetX()+k>=0 && victims[i].GetY()+l>=0)
+                        {
+                            if(!area[victims[i].GetX()+k][victims[i].GetY()+l])
+                            {
+                                cord.push_back(Point(victims[i].GetX()+k, victims[i].GetY()+l));
+                            }
+                        }
+                }
+
+            if(cord.size()==0) continue;
+
+            int rand = qrand()%cord.size();
+
+            area[victims[i].GetX()][victims[i].GetY()]=0;
+            area[cord[rand].x][cord[rand].y]=2;
+            victims[i].SetX(cord[rand].x);
+            victims[i].SetY(cord[rand].y);
+            victims[i].GetCountTime()++;
+        }
+        for(int Pr=0; Pr<victims.size(); Pr++)
+        {
+            double cellWidth = (double)width()/SizeField;
+            double cellHeight = (double)height()/SizeField;
+
+            p.setBrush(Qt::blue);
+            p.drawEllipse((victims[Pr].GetX())*cellWidth ,(victims[Pr].GetY())*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
+        }
 }
 
 
@@ -254,10 +267,10 @@ void Drawing_Scene::DrawScene(QPainter &p)
 
     for(int i=1; i <= SizeField; i++) {
         for(int j=1; j <= SizeField; j++) {
-                qreal left = (qreal)(cellWidth*j-cellWidth);
-                qreal top  = (qreal)(cellHeight*i-cellHeight);
-                QRectF r(left, top, (qreal)cellWidth, (qreal)cellHeight);
-                p.fillRect(r, gridColor);
+            qreal left = (qreal)(cellWidth*j-cellWidth);
+            qreal top  = (qreal)(cellHeight*i-cellHeight);
+            QRectF r(left, top, (qreal)cellWidth, (qreal)cellHeight);
+            p.fillRect(r, gridColor);
         }
     }
 }
