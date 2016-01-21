@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QVector>
 #include <QLabel>
-
+#include <QMouseEvent>
 
 #include "predators.h"
 #include "victims.h"
@@ -28,29 +28,27 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 
 signals:
     void fieldNotChanged(bool ok);
+    void SendCoordMous(int, int, int);
 
 private slots:
 
-    void DrawScene(QPainter &p);
     void DrawGrid(QPainter &p);
-    void DrawUpdate(QPainter &p);
     void InitField(QPainter &p);
 
 public slots:
     void ChangeFieldSize(const int &size);
-    void startGame();
-    void stopGame();
-    void clear();
     void SetInterval(int);
 
-     void RecieveInit(AREA **);
+    void RecieveInit(AREA **);
 
 private:
     int SizeField;
-    int **Field;
+    AREA **Field;
     QTimer *timer;
 };
 

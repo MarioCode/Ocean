@@ -11,12 +11,16 @@ Ocean::Ocean(QWidget *parent) :
     timer = new QTimer;
 
     SizeField=ui->SizeFieldBox->value();
+
     area = new AREA * [SizeField];
     for (int i = 0; i < SizeField; i++)
         area[i] = new AREA [SizeField];
 
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(Generation()));
     connect(ui->generationButton, SIGNAL(clicked()), this, SLOT(StartInit()));
+    connect(ocean, SIGNAL(SendCoordMous(int, int, int)), this, SLOT(GetCoordMouse(int, int, int)));
+
+
     // connect(ui->stopButton, SIGNAL(clicked()), ocean, SLOT(stopGame()));
     // connect(ui->clearButton, SIGNAL(clicked()), ocean, SLOT(clear()));
 
@@ -29,6 +33,7 @@ Ocean::Ocean(QWidget *parent) :
     ui->main_layout->setStretchFactor(ui->ConfigLaout, 2);
     ui->startButton->setEnabled(false);
     ui->OceanScene->addWidget(ocean);
+    ocean->RecieveInit(area);
 }
 
 void Ocean::StartInit()
@@ -71,11 +76,11 @@ void Ocean::StartInit()
         area[posX][posY].who = 2;
     }
 
-    ocean->RecieveInit(area);
     ui->countPredators->setText(QString::number(predators.size()));
     ui->countVictims->setText(QString::number(victims.size()));
     ui->startButton->setEnabled(true);
 
+    ocean->RecieveInit(area);
 }
 
 void Ocean::Generation()
@@ -102,6 +107,7 @@ void Ocean::Generation()
             }
         }
         //ищем жертву
+
         Point cord = RandomCellAr1(Point(predators[i].GetX(), predators[i].GetY()), 2);
         bool isVic=true;
         if(cord.x==-1)  //если ничего не нашли - передвинутся в пустую(дописать)
@@ -109,6 +115,9 @@ void Ocean::Generation()
             cord=RandomCellAr1(Point(predators[i].GetX(), predators[i].GetY()), 0);
             isVic=false;
         }
+
+        if(isVic==false && cord.x==-1)
+            continue;
 
         area[predators[i].GetX()][predators[i].GetY()].who=0;//там где были не занято
         area[cord.x][cord.y].who=1;//куда идём - хищник
@@ -165,6 +174,8 @@ void Ocean::Generation()
 
     ui->countPredators->setText(QString::number(predators.size()));
     ui->countVictims->setText(QString::number(victims.size()));
+
+    ocean->RecieveInit(area);
 }
 
 
@@ -196,10 +207,36 @@ Ocean::~Ocean()
     delete ui;
 }
 
+void Ocean::GetCoordMouse(int butclick, int x, int y)
+{
+    SettForMouse();
+
+    if (area[x][y].who == 2 || area[x][y].who == 1)
+        return;
+
+    if (butclick==0)
+    {
+        predators.push_back(Predators(x,y));
+        area[x][y].who = 1;
+    }
+    else if (butclick==1)
+    {
+        victims.push_back(Victims(x,y));
+        area[x][y].who = 2;
+    }
+
+    ocean->RecieveInit(area);
+
+    ui->countPredators->setText(QString::number(predators.size()));
+    ui->countVictims->setText(QString::number(victims.size()));
+
+}
+
 void Ocean::on_startButton_clicked()
 {
     timer->start(ui->UpTimeBox->value());
 
+    ui->stopButton->setEnabled(true);
     ui->clearButton->setEnabled(false);
     ui->startButton->setEnabled(false);
     ui->generationButton->setEnabled(false);
@@ -209,6 +246,15 @@ void Ocean::on_startButton_clicked()
     ui->deadStep_Predators->setEnabled(false);
     ui->razmnozh_Predators->setEnabled(false);
     ui->razmnozh_Victims->setEnabled(false);
+}
+
+void Ocean::SettForMouse()
+{
+    ui->startButton->setEnabled(true);
+    ui->clearButton->setEnabled(false);
+    ui->stopButton->setEnabled(false);
+    ui->generationButton->setEnabled(false);
+    ui->SizeFieldBox->setEnabled(false);
 }
 
 void Ocean::on_stopButton_clicked()

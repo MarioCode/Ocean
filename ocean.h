@@ -28,15 +28,14 @@ public:
     ~Ocean();
 
 private slots:
-   void Generation();
-   void StartInit();
-   Point RandomCellAr1(Point p, int who);
-
-   void on_startButton_clicked();
-
-   void on_stopButton_clicked();
-
-   void on_clearButton_clicked();
+    void Generation();
+    void StartInit();
+    Point RandomCellAr1(Point p, int who);
+    void GetCoordMouse(int, int, int);
+    void on_startButton_clicked();
+    void on_stopButton_clicked();
+    void SettForMouse();
+    void on_clearButton_clicked();
 
 private:
     Ui::Ocean *ui;
