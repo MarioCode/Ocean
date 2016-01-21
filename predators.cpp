@@ -5,7 +5,7 @@ void Predators::SetCountAte(int _addAte)
     CountAte +=_addAte;
 }
 
-int Predators::GetCountAte() const
+int& Predators::GetCountAte()
 {
     return CountAte;
 }

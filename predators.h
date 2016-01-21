@@ -12,7 +12,7 @@ public:
     Predators(int _posX, int _posY):Fish( _posX, _posY, true), CountAte(0), CountTime(0) {}
 
     void SetCountAte(int _addAte);
-    int GetCountAte() const;
+    int& GetCountAte();
     int& GetCountTime();
 
     ~Predators();

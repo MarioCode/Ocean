@@ -11,6 +11,7 @@ public:
     Victims(int _posX, int _posY):Fish( _posX, _posY, true), CountTime(0) {}
 
     int& GetCountTime();
+    bool operator==(const Victims&);
 
     ~Victims();
 };

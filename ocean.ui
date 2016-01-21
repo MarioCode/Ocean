@@ -70,6 +70,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QSpinBox" name="SizeFieldBox">
+            <property name="minimum">
+             <number>30</number>
+            </property>
             <property name="maximum">
              <number>400</number>
             </property>
@@ -80,11 +83,14 @@
           </item>
           <item row="0" column="1">
            <widget class="QSpinBox" name="UpTimeBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
             <property name="maximum">
              <number>5000</number>
             </property>
             <property name="value">
-             <number>200</number>
+             <number>150</number>
             </property>
            </widget>
           </item>
@@ -159,7 +165,7 @@
           <item row="4" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Размножение</string>
+             <string>Размножение (кол-во ходов)</string>
             </property>
            </widget>
           </item>
@@ -190,11 +196,11 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QGridLayout" name="gridLayout_3">
           <property name="topMargin">
            <number>25</number>
           </property>
-          <item>
+          <item row="0" column="0">
            <widget class="QPushButton" name="startButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
@@ -207,7 +213,7 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="1">
            <widget class="QPushButton" name="stopButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
@@ -220,7 +226,7 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item row="1" column="1">
            <widget class="QPushButton" name="clearButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
@@ -233,7 +239,73 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButton">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(211, 214, 255);
+    border: 2px groove gray;
+    border-radius: 10px;
+    padding: 2px 4px;</string>
+            </property>
+            <property name="text">
+             <string>Генерация поля</string>
+            </property>
+           </widget>
+          </item>
          </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <property name="topMargin">
+           <number>27</number>
+          </property>
+          <item row="3" column="1">
+           <widget class="QLabel" name="countVictims">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="countPredators">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Количество жертв:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Количество хищников:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Статистика:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_5"/>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="graph"/>
         </item>
         <item>
          <spacer name="verticalSpacer">
