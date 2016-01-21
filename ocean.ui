@@ -108,13 +108,6 @@
           <property name="topMargin">
            <number>22</number>
           </property>
-          <item row="1" column="2">
-           <widget class="QLabel" name="LabelVictims">
-            <property name="text">
-             <string>Жертва</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="1">
            <widget class="QSpinBox" name="Amount_Predators">
             <property name="maximum">
@@ -135,22 +128,29 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="LabelVictims">
+            <property name="text">
+             <string>Жертва</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QSpinBox" name="razmnozh_Victims">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="1">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Хищник</string>
             </property>
            </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QSpinBox" name="razmnozh_Victims">
-            <property name="value">
-             <number>5</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QSpinBox" name="timeLife_Victims"/>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="LabelPredators">
@@ -159,37 +159,43 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QSpinBox" name="timeLife_Predators"/>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="razmnozh_Predators">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>10</number>
+            </property>
+            <property name="displayIntegerBase">
+             <number>10</number>
+            </property>
+           </widget>
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Размножение (кол-во ходов)</string>
+             <string>Размножение (сытость, шаги)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="deadStep_Predators">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>30</number>
             </property>
            </widget>
           </item>
           <item row="5" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Продолжительность жизни </string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="razmnozh_Predators"/>
-          </item>
-          <item row="6" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Гибель голодной клетки</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QSpinBox" name="deadStep_Predators">
-            <property name="value">
-             <number>10</number>
+             <string>Гибель от голода</string>
             </property>
            </widget>
           </item>
@@ -204,8 +210,7 @@
            <widget class="QPushButton" name="startButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
-    border: 2px groove gray;
-    border-radius: 10px;
+ 
     padding: 2px 4px;</string>
             </property>
             <property name="text">
@@ -217,9 +222,8 @@
            <widget class="QPushButton" name="stopButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
-    border: 2px groove gray;
-    border-radius: 10px;
-    padding: 2px 4px;background-color: rgb(211, 214, 255);</string>
+ 
+    padding: 2px 4px;</string>
             </property>
             <property name="text">
              <string>Стоп</string>
@@ -230,8 +234,7 @@
            <widget class="QPushButton" name="clearButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
-    border: 2px groove gray;
-    border-radius: 10px;
+ 
     padding: 2px 4px;</string>
             </property>
             <property name="text">
@@ -240,11 +243,10 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="generationButton">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(211, 214, 255);
-    border: 2px groove gray;
-    border-radius: 10px;
+ 
     padding: 2px 4px;</string>
             </property>
             <property name="text">
@@ -262,14 +264,14 @@
           <item row="3" column="1">
            <widget class="QLabel" name="countVictims">
             <property name="text">
-             <string/>
+             <string>0</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
            <widget class="QLabel" name="countPredators">
             <property name="text">
-             <string/>
+             <string>0</string>
             </property>
            </widget>
           </item>

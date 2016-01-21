@@ -2,11 +2,22 @@
 #define OCEAN_H
 
 #include <QMainWindow>
+#include <QDebug>
+#include <QVectorIterator>
+#include <algorithm>
+
 #include "drawing_scene.h"
 
 namespace Ui {
 class Ocean;
 }
+
+struct Point
+{
+    int x,y;
+    Point(int _x=0, int _y=0):x(_x), y(_y){}
+};
+
 
 class Ocean : public QMainWindow
 {
@@ -15,15 +26,27 @@ class Ocean : public QMainWindow
 public:
     explicit Ocean(QWidget *parent = 0);
     ~Ocean();
-public slots:
-    void SetStat(QString, QString);
 
 private slots:
-   // void Generation(QPainter &p);
-    //void InitField(QPainter &p);
+   void Generation();
+   void StartInit();
+   Point RandomCellAr1(Point p, int who);
+
+   void on_startButton_clicked();
+
+   void on_stopButton_clicked();
+
+   void on_clearButton_clicked();
+
 private:
     Ui::Ocean *ui;
     Drawing_Scene *ocean;
+
+    int SizeField;
+    QTimer *timer;
+    QVector<Predators> predators;
+    QVector<Victims> victims;
+    AREA **area; //0 - не занято, 1 - занято хищником, 2 - занято жертвой
 };
 
 #endif // OCEAN_H
