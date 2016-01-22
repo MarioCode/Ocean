@@ -72,19 +72,6 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="SizeFieldBox">
-            <property name="minimum">
-             <number>30</number>
-            </property>
-            <property name="maximum">
-             <number>400</number>
-            </property>
-            <property name="value">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="1">
            <widget class="QSpinBox" name="UpTimeBox">
             <property name="minimum">
@@ -98,10 +85,40 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="SizeFieldBox">
+            <property name="minimum">
+             <number>30</number>
+            </property>
+            <property name="maximum">
+             <number>400</number>
+            </property>
+            <property name="value">
+             <number>30</number>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="UpTimeLabel">
             <property name="text">
              <string>Скорость (мкс)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Неподвижных объектов (камни)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="AmountStones">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>50</number>
             </property>
            </widget>
           </item>
@@ -132,6 +149,13 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Хищник</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="2">
            <widget class="QLabel" name="LabelVictims">
             <property name="text">
@@ -149,10 +173,10 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_3">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label">
             <property name="text">
-             <string>Хищник</string>
+             <string>Размножение (сытость, шаги)</string>
             </property>
            </widget>
           </item>
@@ -176,10 +200,10 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label">
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Размножение (сытость, шаги)</string>
+             <string>Гибель от голода</string>
             </property>
            </widget>
           </item>
@@ -193,13 +217,6 @@
             </property>
             <property name="value">
              <number>30</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Гибель от голода</string>
             </property>
            </widget>
           </item>
@@ -286,13 +303,6 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Количество хищников:</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_5">
             <property name="font">
@@ -302,6 +312,13 @@
             </property>
             <property name="text">
              <string>Статистика:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Количество хищников:</string>
             </property>
            </widget>
           </item>

@@ -42,12 +42,27 @@ void Ocean::StartInit()
 {
     // Добавление хищников в вектор
 
+
     predators.erase(predators.begin(), predators.end());
     victims.erase(victims.begin(), victims.end());
 
     for (int i = 0; i < SizeField; i++)
         for (int j = 0; j < SizeField; j++)
             area[i][j].who=0;
+
+
+    for(int i=0; i<ui->AmountStones->value(); i++)
+    {
+        int posX = qrand()%SizeField;
+        int posY = qrand()%SizeField;
+
+        if(area[posX][posY].who)
+        {
+            i--;
+            continue;
+        }
+        area[posX][posY].who = 3;
+    }
 
     for(int i=0; i<ui->Amount_Predators->value(); i++)
     {

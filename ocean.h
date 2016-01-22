@@ -47,7 +47,7 @@ private:
     QTimer *timer;
     QVector<Predators> predators;
     QVector<Victims> victims;
-    AREA **area; //0 - не занято, 1 - занято хищником, 2 - занято жертвой
+    AREA **area; //0 - не занято, 1 - занято хищником, 2 - занято жертвой, 3 - камушек бля
 };
 
 #endif // OCEAN_H

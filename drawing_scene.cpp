@@ -4,7 +4,7 @@ Drawing_Scene::Drawing_Scene(QWidget *parent) : QWidget(parent)
 {
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
-    SizeField = 100;
+    SizeField = 30;
 }
 
 void Drawing_Scene::RecieveInit(AREA **_area)
@@ -44,8 +44,10 @@ void Drawing_Scene::InitField(QPainter &p)
                 continue;
             if (Field[i][j].who == 2)
                 p.setBrush(Qt::blue);
-            else
+            else if (Field[i][j].who == 1)
                 p.setBrush(Qt::red);
+            else
+                p.setBrush(Qt::black);
 
             p.drawEllipse(i*cellWidth ,j*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
         }
