@@ -10,6 +10,9 @@
 #include <QLabel>
 #include <QMouseEvent>
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+
 #include "predators.h"
 #include "victims.h"
 
@@ -36,20 +39,18 @@ signals:
     void SendCoordMous(int, int, int);
 
 private slots:
-
     void DrawGrid(QPainter &p);
     void InitField(QPainter &p);
 
 public slots:
     void ChangeFieldSize(const int &size);
-    void SetInterval(int);
-
     void RecieveInit(AREA **);
 
 private:
     int SizeField;
     AREA **Field;
-    QTimer *timer;
+    QGraphicsView *view;
+    QGraphicsScene* scene;
 };
 
 #endif // DRAWING_SCENE_H

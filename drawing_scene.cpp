@@ -1,10 +1,17 @@
 #include "drawing_scene.h"
+#include <QPainter>
+#include <sys/timeb.h>
+#include <qmath.h>
+
+struct _timeb timebuffer;
+
 
 Drawing_Scene::Drawing_Scene(QWidget *parent) : QWidget(parent)
 {
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
-    SizeField = 30;
+
+    SizeField = 250;
 }
 
 void Drawing_Scene::RecieveInit(AREA **_area)
@@ -13,17 +20,17 @@ void Drawing_Scene::RecieveInit(AREA **_area)
     update();
 }
 
-void Drawing_Scene::SetInterval(int msec)
-{
-    timer->setInterval(msec);
-}
-
 void Drawing_Scene::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
 
+    _ftime( &timebuffer );
+    unsigned short millitm = timebuffer.millitm;
+
     DrawGrid(p);
     InitField(p);
+    unsigned short millitm1 = timebuffer.millitm;
+     qDebug() << millitm1 << millitm;
 }
 
 void Drawing_Scene::ChangeFieldSize(const int &size)
@@ -85,15 +92,15 @@ void Drawing_Scene::mousePressEvent(QMouseEvent *e)
 
     int k = floor(e->y()/cellHeight);
     int j = floor(e->x()/cellWidth);
- qDebug() << e->button();
+
     if (k >= 0 && k<SizeField && j >= 0 && j<SizeField)
     {
         if (e->button() == Qt::RightButton)
             emit SendCoordMous(0, j, k);
-        else
+        else  if (e->button() == Qt::LeftButton)
             emit SendCoordMous(1, j, k);
+        else emit SendCoordMous(2, j, k);
     }
-
 }
 
 void Drawing_Scene::mouseMoveEvent(QMouseEvent *e)
@@ -104,7 +111,6 @@ void Drawing_Scene::mouseMoveEvent(QMouseEvent *e)
     int k = floor(e->y()/cellHeight);
     int j = floor(e->x()/cellWidth);
 
-   // qDebug() << e->button().;
     if (k >= 0 && k<SizeField && j >= 0 && j<SizeField)
     {
         if (e->button() == Qt::RightButton)

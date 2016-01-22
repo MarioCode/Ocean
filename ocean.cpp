@@ -1,5 +1,9 @@
 #include "ocean.h"
 #include "ui_ocean.h"
+#include <QMessageBox>
+#include <sys/timeb.h>
+
+struct _timeb timebuffer1;
 
 Ocean::Ocean(QWidget *parent) :
     QMainWindow(parent),
@@ -20,14 +24,8 @@ Ocean::Ocean(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(Generation()));
     connect(ui->generationButton, SIGNAL(clicked()), this, SLOT(StartInit()));
     connect(ocean, SIGNAL(SendCoordMous(int, int, int)), this, SLOT(GetCoordMouse(int, int, int)));
-
-
-    // connect(ui->stopButton, SIGNAL(clicked()), ocean, SLOT(stopGame()));
-    // connect(ui->clearButton, SIGNAL(clicked()), ocean, SLOT(clear()));
-
+    connect(ui->clearButton, SIGNAL(clicked()), ocean, SLOT(clear()));
     connect(timer, SIGNAL(timeout()), this, SLOT(Generation()));
-
-    // connect(ui->UpTimeBox, SIGNAL(valueChanged(int)), ocean, SLOT(SetInterval(int)));
     connect(ui->SizeFieldBox, SIGNAL(valueChanged(int)), ocean, SLOT(ChangeFieldSize(int)));
 
     ui->main_layout->setStretchFactor(ui->OceanScene, 8);
@@ -42,6 +40,12 @@ void Ocean::StartInit()
 {
     // Добавление хищников в вектор
 
+    int CountCell=SizeField*SizeField;
+    if(CountCell - ui->AmountStones->value() - ui->Amount_Predators->value() - ui->Amount_Victims->value() < 0)
+    {
+        QMessageBox::information(this, tr("Заголовок"), tr("Описание"));
+        return;
+    }
 
     predators.erase(predators.begin(), predators.end());
     victims.erase(victims.begin(), victims.end());
@@ -77,6 +81,7 @@ void Ocean::StartInit()
         predators.push_back(Predators(posX,posY));
         area[posX][posY].who = 1;
     }
+    qDebug() <<predators.size() << victims.size();
 
     // Добавление жертв в вектор
 
@@ -102,6 +107,9 @@ void Ocean::StartInit()
 
 void Ocean::Generation()
 {
+    _ftime( &timebuffer1 );
+    unsigned short millitm2 = timebuffer1.millitm;
+
     for(int i=0; i<predators.size(); i++)
     {
         if(predators[i].GetCountTime()==ui->deadStep_Predators->value()) //если хищник голодный, умереть
@@ -111,7 +119,7 @@ void Ocean::Generation()
             i--;
             continue;
         }
-        else if(predators[i].GetCountAte()==ui->razmnozh_Predators->value()) //очень сытый
+        else if(predators[i].GetCountAte()>=ui->razmnozh_Predators->value()) //очень сытый
         {
             //размножся
             Point cord = RandomCellAr1(Point(predators[i].GetX(), predators[i].GetY()), 0);
@@ -141,18 +149,20 @@ void Ocean::Generation()
 
         if(isVic)
         {
-            int vic;
-            for(vic=0; vic<victims.size(); vic++)
-            {
-                if(victims[vic] == Victims(cord.x, cord.y))
-                    break;
-            }
-            victims.erase(victims.begin() + vic);//удаляем жертву
+            //            int vic;
+            //            for(vic=0; vic<victims.size(); vic++)
+            //            {
+            //                if(victims[vic] == Victims(cord.x, cord.y))
+            //                    break;
+            //            }
+            //            victims.erase(victims.begin() + vic);//удаляем жертву
+            victims.erase(std::find(victims.begin(), victims.end(), Victims(cord.x, cord.y)));
             predators[i].GetCountAte()++; //поели
-            predators[i].GetCountTime()-=5;
+            predators[i].GetCountTime()=0;
         }
         else
             predators[i].GetCountTime()++;
+
         predators[i].SetX(cord.x); //переместились
         predators[i].SetY(cord.y);
 
@@ -193,6 +203,9 @@ void Ocean::Generation()
     ui->countVictims->setText(QString::number(victims.size()));
     ui->sootnosh->setText(QString::number((float)victims.size()/predators.size()) + "%");
     graph->Up(victims.size()/100, predators.size()/100);
+
+    unsigned short millitm3 = timebuffer1.millitm;
+    qDebug() << millitm2 << millitm3;
     ocean->RecieveInit(area);
 }
 
@@ -232,12 +245,18 @@ void Ocean::GetCoordMouse(int butclick, int x, int y)
     if (area[x][y].who == 2 || area[x][y].who == 1)
         return;
 
+    // Если нажата ПКМ - добавляем хищника
     if (butclick==0)
     {
         predators.push_back(Predators(x,y));
         area[x][y].who = 1;
     }
+    // Если нажата(зажата) ЛКМ - добавляем камни (стены)
     else if (butclick==1)
+        area[x][y].who = 3;
+
+    // Если нажато колесико - добавляем хищника
+    else if (butclick==2)
     {
         victims.push_back(Victims(x,y));
         area[x][y].who = 2;
@@ -254,6 +273,7 @@ void Ocean::on_startButton_clicked()
 {
     timer->start(ui->UpTimeBox->value());
 
+    ui->AmountStones->setEnabled(false);
     ui->stopButton->setEnabled(true);
     ui->clearButton->setEnabled(false);
     ui->startButton->setEnabled(false);
@@ -287,6 +307,7 @@ void Ocean::on_clearButton_clicked()
     ui->SizeFieldBox->setEnabled(true);
     ui->generationButton->setEnabled(true);
 
+    ui->AmountStones->setEnabled(true);
     ui->Amount_Predators->setEnabled(true);
     ui->Amount_Victims->setEnabled(true);
     ui->deadStep_Predators->setEnabled(true);
@@ -301,4 +322,6 @@ void Ocean::on_clearButton_clicked()
     for (int i = 0; i < SizeField; i++)
         for (int j = 0; j < SizeField; j++)
             area[i][j].who=0;
+
+    ocean->RecieveInit(area);
 }
