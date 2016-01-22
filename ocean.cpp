@@ -8,6 +8,7 @@ Ocean::Ocean(QWidget *parent) :
     ui->setupUi(this);
 
     ocean = new Drawing_Scene(this);
+    graph = new Graph(this);
     timer = new QTimer;
 
     SizeField=ui->SizeFieldBox->value();
@@ -32,6 +33,7 @@ Ocean::Ocean(QWidget *parent) :
     ui->main_layout->setStretchFactor(ui->OceanScene, 8);
     ui->main_layout->setStretchFactor(ui->ConfigLaout, 2);
     ui->startButton->setEnabled(false);
+    ui->graph->addWidget(graph);
     ui->OceanScene->addWidget(ocean);
     ocean->RecieveInit(area);
 }
@@ -174,7 +176,8 @@ void Ocean::Generation()
 
     ui->countPredators->setText(QString::number(predators.size()));
     ui->countVictims->setText(QString::number(victims.size()));
-
+    ui->sootnosh->setText(QString::number((float)victims.size()/predators.size()) + "%");
+    graph->Up(victims.size()/100, predators.size()/100);
     ocean->RecieveInit(area);
 }
 

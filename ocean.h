@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "drawing_scene.h"
+#include "graph.h"
 
 namespace Ui {
 class Ocean;
@@ -40,6 +41,7 @@ private slots:
 private:
     Ui::Ocean *ui;
     Drawing_Scene *ocean;
+    Graph *graph;
 
     int SizeField;
     QTimer *timer;

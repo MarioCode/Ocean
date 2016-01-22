@@ -17,12 +17,14 @@ SOURCES += main.cpp\
     drawing_scene.cpp \
     fish.cpp \
     predators.cpp \
-    victims.cpp
+    victims.cpp \
+    graph.cpp
 
 HEADERS  += ocean.h \
     drawing_scene.h \
     fish.h \
     predators.h \
-    victims.h
+    victims.h \
+    graph.h
 
 FORMS    += ocean.ui
