@@ -10,16 +10,16 @@ Ocean::Ocean(QWidget *parent) :
     ui(new Ui::Ocean)
 {
     ui->setupUi(this);
-
-    ocean = new Drawing_Scene(this);
-    graph = new Graph(this);
     timer = new QTimer;
-
     SizeField=ui->SizeFieldBox->value();
 
-    area = new AREA * [SizeField];
-    for (int i = 0; i < SizeField; i++)
-        area[i] = new AREA [SizeField];
+    for (int i = 0;i<100;i++)
+        massPointX.push_back(i);
+
+    ocean = new Drawing_Scene(this, SizeField);
+    area = new AREA * [400];
+    for (int i = 0; i < 400; i++)
+        area[i] = new AREA [400];
 
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(Generation()));
     connect(ui->generationButton, SIGNAL(clicked()), this, SLOT(StartInit()));
@@ -31,9 +31,33 @@ Ocean::Ocean(QWidget *parent) :
     ui->main_layout->setStretchFactor(ui->OceanScene, 8);
     ui->main_layout->setStretchFactor(ui->ConfigLaout, 2);
     ui->startButton->setEnabled(false);
-    ui->graph->addWidget(graph);
     ui->OceanScene->addWidget(ocean);
     ocean->RecieveInit(area);
+}
+
+void Ocean::DrawGraph(int Pr, int Vic)
+{
+    massPointVictims.push_back(Pr);
+    massPointPredators.push_back(Vic);
+
+    if (massPointVictims.count() > massPointX.count())
+        massPointVictims.removeAt(0);
+    if (massPointPredators.count() > massPointX.count())
+        massPointPredators.removeAt(0);
+
+    ui->widget->clearGraphs();
+    ui->widget->addGraph();
+    ui->widget->graph(0)->setPen(QPen(Qt::red));
+    ui->widget->graph(0)->setData(massPointX, massPointVictims);
+    ui->widget->xAxis->setRange(0, 100);//Для оси Ox
+    ui->widget->yAxis->setRange(0, SizeField*SizeField);//Для оси Oy
+
+    ui->widget->addGraph();
+    ui->widget->graph(1)->setData(massPointX, massPointPredators);
+    ui->widget->xAxis->setRange(0, 100);//Для оси Ox
+    ui->widget->yAxis->setRange(0, SizeField*SizeField);//Для оси Oy
+
+    ui->widget->replot();
 }
 
 void Ocean::StartInit()
@@ -107,9 +131,6 @@ void Ocean::StartInit()
 
 void Ocean::Generation()
 {
-    _ftime( &timebuffer1 );
-    unsigned short millitm2 = timebuffer1.millitm;
-
     for(int i=0; i<predators.size(); i++)
     {
         if(predators[i].GetCountTime()==ui->deadStep_Predators->value()) //если хищник голодный, умереть
@@ -187,7 +208,8 @@ void Ocean::Generation()
 
         Point cord=RandomCellAr1(Point(victims[i].GetX(), victims[i].GetY()), 0);
 
-        if(cord.x==-1) continue;
+        if(cord.x==-1)
+            continue;
 
         area[victims[i].GetX()][victims[i].GetY()].who=0;
         area[cord.x][cord.y].who=2;
@@ -201,11 +223,8 @@ void Ocean::Generation()
 
     ui->countPredators->setText(QString::number(predators.size()));
     ui->countVictims->setText(QString::number(victims.size()));
-    ui->sootnosh->setText(QString::number((float)victims.size()/predators.size()) + "%");
-    graph->Up(victims.size()/100, predators.size()/100);
-
-    unsigned short millitm3 = timebuffer1.millitm;
-    qDebug() << millitm2 << millitm3;
+    ui->sootnosh->setText(QString::number((float)victims.size()/(victims.size() + predators.size()), 'f' , 2) + "%");
+    DrawGraph(predators.size(), victims.size());
     ocean->RecieveInit(area);
 }
 
@@ -217,7 +236,6 @@ Point Ocean::RandomCellAr1(Point p, int who)
     for(int k=-1; k<2; k++)
         for(int l=-1; l<2; l++)
         {
-            //if(k!=0 && l!=0)
             if(p.x+k < SizeField  && p.y+l < SizeField
                     && p.x+k>=0 && p.y+l>=0)
             {
@@ -227,7 +245,6 @@ Point Ocean::RandomCellAr1(Point p, int who)
                 }
             }
         }
-
     if(cord.size()==0) return Point(-1, -1);
     int rand = qrand()%cord.size();
     return cord[rand];
@@ -323,5 +340,18 @@ void Ocean::on_clearButton_clicked()
         for (int j = 0; j < SizeField; j++)
             area[i][j].who=0;
 
+    massPointVictims.erase(massPointVictims.begin(), massPointVictims.end());
+    massPointPredators.erase(massPointPredators.begin(), massPointPredators.end());
+    DrawGraph(predators.size(), victims.size());
     ocean->RecieveInit(area);
+}
+
+void Ocean::on_SizeFieldBox_valueChanged(int arg1)
+{
+    SizeField = ui->SizeFieldBox->value();
+}
+
+void Ocean::on_UpTimeBox_valueChanged(int arg1)
+{
+    timer->setInterval(arg1);
 }

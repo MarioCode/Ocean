@@ -1,17 +1,13 @@
 #include "drawing_scene.h"
 #include <QPainter>
-#include <sys/timeb.h>
 #include <qmath.h>
 
-struct _timeb timebuffer;
-
-
-Drawing_Scene::Drawing_Scene(QWidget *parent) : QWidget(parent)
+Drawing_Scene::Drawing_Scene(QWidget *parent, int Size) : QWidget(parent)
 {
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
 
-    SizeField = 250;
+    SizeField = Size;
 }
 
 void Drawing_Scene::RecieveInit(AREA **_area)
@@ -24,13 +20,8 @@ void Drawing_Scene::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
 
-    _ftime( &timebuffer );
-    unsigned short millitm = timebuffer.millitm;
-
     DrawGrid(p);
     InitField(p);
-    unsigned short millitm1 = timebuffer.millitm;
-     qDebug() << millitm1 << millitm;
 }
 
 void Drawing_Scene::ChangeFieldSize(const int &size)
@@ -56,7 +47,7 @@ void Drawing_Scene::InitField(QPainter &p)
             else
                 p.setBrush(Qt::black);
 
-            p.drawEllipse(i*cellWidth ,j*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
+            p.drawEllipse (i*cellWidth ,j*cellHeight, (qreal)cellWidth,(qreal)cellHeight);
         }
 }
 

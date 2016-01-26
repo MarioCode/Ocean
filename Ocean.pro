@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = Ocean
 TEMPLATE = app
@@ -18,13 +18,13 @@ SOURCES += main.cpp\
     fish.cpp \
     predators.cpp \
     victims.cpp \
-    graph.cpp
+    qcustomplot.cpp
 
 HEADERS  += ocean.h \
     drawing_scene.h \
     fish.h \
     predators.h \
     victims.h \
-    graph.h
+    qcustomplot.h
 
 FORMS    += ocean.ui

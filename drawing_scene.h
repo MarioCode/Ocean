@@ -26,7 +26,7 @@ class Drawing_Scene : public QWidget
     Q_OBJECT
 
 public:
-    explicit Drawing_Scene(QWidget *parent = 0);
+    explicit Drawing_Scene(QWidget *parent = 0, int Size =0);
     ~Drawing_Scene();
 
 protected:

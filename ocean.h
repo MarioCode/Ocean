@@ -5,9 +5,7 @@
 #include <QDebug>
 #include <QVectorIterator>
 #include <algorithm>
-
 #include "drawing_scene.h"
-#include "graph.h"
 
 namespace Ui {
 class Ocean;
@@ -37,11 +35,18 @@ private slots:
     void on_stopButton_clicked();
     void SettForMouse();
     void on_clearButton_clicked();
+    void DrawGraph(int, int);
+    void on_SizeFieldBox_valueChanged(int arg1);
+
+    void on_UpTimeBox_valueChanged(int arg1);
 
 private:
     Ui::Ocean *ui;
     Drawing_Scene *ocean;
-    Graph *graph;
+
+    QVector<double> massPointX;
+    QVector<double> massPointVictims;
+    QVector<double> massPointPredators;
 
     int SizeField;
     QTimer *timer;
