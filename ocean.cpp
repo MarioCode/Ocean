@@ -357,6 +357,7 @@ void Ocean::on_UpTimeBox_valueChanged(int arg1)
 
 void Ocean::on_comboBox_currentIndexChanged(int index)
 {
+    //Санек, раскидай дубляж кода, я спать хочу..
 
     if(index && index!=3)
     {
@@ -423,6 +424,7 @@ void Ocean::on_comboBox_currentIndexChanged(int index)
     case 4:
     {
         HEADMAP SaveMap;
+        QString path_save = QFileDialog::getSaveFileName(0, "Загрузка карты", "", "Сохранение карты (*.MAPAS)");
 
         SaveMap.mSize=SizeField;
         SaveMap.mPredBorn=ui->razmnozh_Predators->value();
@@ -438,7 +440,7 @@ void Ocean::on_comboBox_currentIndexChanged(int index)
                     SaveMap.mStoneCount++;
 
 
-        QFile file("labyrint.MAPAS");
+        QFile file(path_save);
         if(file.open(QIODevice::WriteOnly))
         {
             file.write((char*)&SaveMap, sizeof(SaveMap));
@@ -455,7 +457,43 @@ void Ocean::on_comboBox_currentIndexChanged(int index)
         break;
     }
     case 5:
-        QString str = QFileDialog::getOpenFileName(0, "Загрузка карты", "", "*.MAPAS");
+
+        QString path_load = QFileDialog::getOpenFileName(0, "Загрузка карты", "", "*.MAPAS");
+
+        HEADMAP LoadMap;
+
+        QFile file_load(path_load);
+
+        if(file_load.open(QIODevice::ReadOnly))
+        {
+            file_load.read((char*)&LoadMap, sizeof(LoadMap));
+
+            SizeField = LoadMap.mSize;
+            ocean->ChangeFieldSize(SizeField);
+            ui->razmnozh_Predators->setValue(LoadMap.mPredBorn);
+            ui->razmnozh_Victims->setValue(LoadMap.mVictBorn);
+            ui->deadStep_Predators->setValue(LoadMap.mPredDead);
+            ui->Amount_Predators->setValue(LoadMap.mPredCount);
+            ui->Amount_Victims->setValue(LoadMap.mVictCount);
+            ui->countPredators->setText(QString::number(LoadMap.mPredCount));
+            ui->countVictims->setText(QString::number(LoadMap.mVictCount));
+            ui->SizeFieldBox->setValue(SizeField);
+            ui->AmountStones->setValue(LoadMap.mStoneCount);
+
+            for(int i=0; i<SizeField; i++)
+                for(int j=0; j<SizeField; j++){
+                    file_load.read((char*)&area[i][j].who, 1);
+
+                    if(area[i][j].who==1)
+                        predators.push_back(Predators(i,j));
+                    if(area[i][j].who==2)
+                        victims.push_back(Victims(i,j));
+                }
+            file_load.close();
+        }
+
+        ocean->RecieveInit(area);
+
         ui->comboBox->setCurrentIndex(0);
         break;
     }
