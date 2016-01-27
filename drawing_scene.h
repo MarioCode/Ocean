@@ -10,9 +10,6 @@
 #include <QLabel>
 #include <QMouseEvent>
 
-#include <QGraphicsScene>
-#include <QGraphicsView>
-
 #include "predators.h"
 #include "victims.h"
 

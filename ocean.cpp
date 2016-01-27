@@ -24,7 +24,6 @@ Ocean::Ocean(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(Generation()));
     connect(ui->generationButton, SIGNAL(clicked()), this, SLOT(StartInit()));
     connect(ocean, SIGNAL(SendCoordMous(int, int, int)), this, SLOT(GetCoordMouse(int, int, int)));
-    connect(ui->clearButton, SIGNAL(clicked()), ocean, SLOT(clear()));
     connect(timer, SIGNAL(timeout()), this, SLOT(Generation()));
     connect(ui->SizeFieldBox, SIGNAL(valueChanged(int)), ocean, SLOT(ChangeFieldSize(int)));
 
@@ -67,7 +66,7 @@ void Ocean::StartInit()
     int CountCell=SizeField*SizeField;
     if(CountCell - ui->AmountStones->value() - ui->Amount_Predators->value() - ui->Amount_Victims->value() < 0)
     {
-        QMessageBox::information(this, tr("Заголовок"), tr("Описание"));
+        QMessageBox::information(this, tr("Ошибка!"), tr("Количество существ превышает размеры поля.\nВведите корректные данные."));
         return;
     }
 
@@ -223,7 +222,6 @@ void Ocean::Generation()
 
     ui->countPredators->setText(QString::number(predators.size()));
     ui->countVictims->setText(QString::number(victims.size()));
-    ui->sootnosh->setText(QString::number((float)victims.size()/(victims.size() + predators.size()), 'f' , 2) + "%");
     DrawGraph(predators.size(), victims.size());
     ocean->RecieveInit(area);
 }
@@ -257,7 +255,9 @@ Ocean::~Ocean()
 
 void Ocean::GetCoordMouse(int butclick, int x, int y)
 {
-    SettForMouse();
+
+    if(!timer->isActive())
+        SettForMouse();
 
     if (area[x][y].who == 2 || area[x][y].who == 1)
         return;
@@ -266,6 +266,7 @@ void Ocean::GetCoordMouse(int butclick, int x, int y)
     if (butclick==0)
     {
         predators.push_back(Predators(x,y));
+        ui->countPredators->setText(QString::number(predators.size()));
         area[x][y].who = 1;
     }
     // Если нажата(зажата) ЛКМ - добавляем камни (стены)
@@ -276,6 +277,7 @@ void Ocean::GetCoordMouse(int butclick, int x, int y)
     else if (butclick==2)
     {
         victims.push_back(Victims(x,y));
+        ui->countVictims->setText(QString::number(victims.size()));
         area[x][y].who = 2;
     }
 
@@ -298,9 +300,6 @@ void Ocean::on_startButton_clicked()
     ui->SizeFieldBox->setEnabled(false);
     ui->Amount_Predators->setEnabled(false);
     ui->Amount_Victims->setEnabled(false);
-    ui->deadStep_Predators->setEnabled(false);
-    ui->razmnozh_Predators->setEnabled(false);
-    ui->razmnozh_Victims->setEnabled(false);
 }
 
 void Ocean::SettForMouse()
@@ -323,7 +322,7 @@ void Ocean::on_clearButton_clicked()
 {
     ui->SizeFieldBox->setEnabled(true);
     ui->generationButton->setEnabled(true);
-
+    ui->comboBox->setCurrentIndex(0);
     ui->AmountStones->setEnabled(true);
     ui->Amount_Predators->setEnabled(true);
     ui->Amount_Victims->setEnabled(true);
@@ -348,10 +347,116 @@ void Ocean::on_clearButton_clicked()
 
 void Ocean::on_SizeFieldBox_valueChanged(int arg1)
 {
-    SizeField = ui->SizeFieldBox->value();
+    SizeField = arg1;
 }
 
 void Ocean::on_UpTimeBox_valueChanged(int arg1)
 {
     timer->setInterval(arg1);
+}
+
+void Ocean::on_comboBox_currentIndexChanged(int index)
+{
+
+    if(index && index!=3)
+    {
+        ui->AmountStones->setEnabled(false);
+        ui->stopButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->startButton->setEnabled(true);
+        ui->generationButton->setEnabled(false);
+        ui->SizeFieldBox->setEnabled(false);
+        ui->Amount_Predators->setEnabled(false);
+        ui->Amount_Victims->setEnabled(false);
+        ui->deadStep_Predators->setEnabled(false);
+        ui->razmnozh_Predators->setEnabled(false);
+        ui->razmnozh_Victims->setEnabled(false);
+    }
+
+    switch(index)
+    {
+    case 1:
+    {
+        HEADMAP LoadMap;
+
+        QFile file_load("labyrint.MAPAS");
+
+        if(file_load.open(QIODevice::ReadOnly))
+        {
+            file_load.read((char*)&LoadMap, sizeof(LoadMap));
+
+            SizeField = LoadMap.mSize;
+            ocean->ChangeFieldSize(SizeField);
+            ui->razmnozh_Predators->setValue(LoadMap.mPredBorn);
+            ui->razmnozh_Victims->setValue(LoadMap.mVictBorn);
+            ui->deadStep_Predators->setValue(LoadMap.mPredDead);
+            ui->Amount_Predators->setValue(LoadMap.mPredCount);
+            ui->Amount_Victims->setValue(LoadMap.mVictCount);
+            ui->countPredators->setText(QString::number(LoadMap.mPredCount));
+            ui->countVictims->setText(QString::number(LoadMap.mVictCount));
+            ui->SizeFieldBox->setValue(SizeField);
+            ui->AmountStones->setValue(LoadMap.mStoneCount);
+
+            for(int i=0; i<SizeField; i++)
+                for(int j=0; j<SizeField; j++){
+                    file_load.read((char*)&area[i][j].who, 1);
+
+                    if(area[i][j].who==1)
+                        predators.push_back(Predators(i,j));
+                    if(area[i][j].who==2)
+                        victims.push_back(Victims(i,j));
+                }
+            file_load.close();
+        }
+
+        ocean->RecieveInit(area);
+        break;
+    }
+    case 2:
+
+
+        break;
+    case 3:
+        ui->comboBox->setCurrentIndex(0);
+        break;
+
+    case 4:
+    {
+        HEADMAP SaveMap;
+
+        SaveMap.mSize=SizeField;
+        SaveMap.mPredBorn=ui->razmnozh_Predators->value();
+        SaveMap.mVictBorn=ui->razmnozh_Victims->value();
+        SaveMap.mPredDead=ui->deadStep_Predators->value();
+        SaveMap.mPredCount=predators.size();
+        SaveMap.mVictCount=victims.size();
+
+        SaveMap.mStoneCount=0;
+        for (int i = 0; i < SizeField; i++)
+            for (int j = 0; j < SizeField; j++)
+                if (area[i][j].who==3)
+                    SaveMap.mStoneCount++;
+
+
+        QFile file("labyrint.MAPAS");
+        if(file.open(QIODevice::WriteOnly))
+        {
+            file.write((char*)&SaveMap, sizeof(SaveMap));
+            for(int i=0; i<SizeField; i++)
+                for(int j=0; j<SizeField; j++)
+                    file.write((char*)&area[i][j].who, 1);
+
+            file.close();
+        }
+        else
+            QMessageBox::information(this, tr("Ошибка!"), tr("Ошибка при открытии файла."));
+
+        ui->comboBox->setCurrentIndex(0);
+        break;
+    }
+    case 5:
+        QString str = QFileDialog::getOpenFileName(0, "Загрузка карты", "", "*.MAPAS");
+        ui->comboBox->setCurrentIndex(0);
+        break;
+    }
 }

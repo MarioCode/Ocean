@@ -6,6 +6,9 @@
 #include <QVectorIterator>
 #include <algorithm>
 #include "drawing_scene.h"
+#include <QFile>
+#include <QDataStream>
+#include <QFileDialog>
 
 namespace Ui {
 class Ocean;
@@ -17,6 +20,16 @@ struct Point
     Point(int _x=0, int _y=0):x(_x), y(_y){}
 };
 
+struct HEADMAP
+{
+    unsigned short int mSize;
+    unsigned short int mPredDead;
+    unsigned short int mPredBorn;
+    unsigned short int mVictBorn;
+    unsigned int mVictCount;
+    unsigned int mPredCount;
+    unsigned int mStoneCount;
+};
 
 class Ocean : public QMainWindow
 {
@@ -39,6 +52,8 @@ private slots:
     void on_SizeFieldBox_valueChanged(int arg1);
 
     void on_UpTimeBox_valueChanged(int arg1);
+
+    void on_comboBox_currentIndexChanged(int index);
 
 private:
     Ui::Ocean *ui;
